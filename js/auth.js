@@ -15,12 +15,17 @@ async function signupUser() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
     });
-    const data = await res.json();
+    let data = {};
+    try {
+        data = await res.json();
+    } catch (e) {
+        data = {};
+    }
     if (res.ok) {
         closeModal('signupModal');
         openModal('loginModal');
     } else {
-        document.getElementById('signupError').innerText = data.error || 'Signup failed';
+        document.getElementById('signupError').innerText = data.error || 'Signup failed (check backend/API)';
     }
 }
 
@@ -32,14 +37,19 @@ async function loginUser() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
     });
-    const data = await res.json();
+    let data = {};
+    try {
+        data = await res.json();
+    } catch (e) {
+        data = {};
+    }
     if (res.ok) {
         localStorage.setItem('token', data.token);
         closeModal('loginModal');
         await showGreeting();
         await restoreSession();
     } else {
-        document.getElementById('loginError').innerText = data.error || 'Login failed';
+        document.getElementById('loginError').innerText = data.error || 'Login failed (check backend/API)';
     }
 }
 
