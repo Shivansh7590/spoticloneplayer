@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/utility.css">
+    <title>Create Playlist - Spotify Web Player</title>
+    <style>
+        .custom-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(20,20,20,0.65);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
+        }
+        .custom-modal-content {
+            background: #181818;
+            color: #fff;
+            border-radius: 18px;
+            padding: 36px 32px;
+            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.32);
+            font-size: 1.15rem;
+            text-align: center;
+        }
+        .custom-modal.show { display: flex; }
+        .song-checkbox-list { max-height: 320px; overflow-y: auto; margin-bottom: 18px; }
+        .song-checkbox-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; }
+        .song-checkbox-item label { flex: 1; color: #fff; font-size: 1.01rem; }
+        .playlist-name-input { width: 100%; padding: 10px 16px; border-radius: 8px; border: none; background: #232323; color: #fff; font-size: 1.08rem; margin-bottom: 18px; }
+        .create-btn { background: var(--spotify-green); color: #fff; border: none; border-radius: 8px; padding: 12px 28px; font-size: 1.08rem; font-weight: 600; cursor: pointer; transition: background 0.18s; }
+        .create-btn:hover { background: #1ed760; }
+    </style>
+</head>
+<body>
+    <div class="container flex bg-black">
+        <div class="left">
+            <div class="close">
+                <img width="30" class="invert" src="img/close.svg" alt="">
+            </div>
+            <div class="home bg-grey rounded m-1 p-1">
+                <div class="logo"><img width="110" class="invert" src="img/logo.svg" alt=""></div>
+                <ul>
+                    <li id="homeBtn"><img class="invert" src="img/home.svg" alt="home">Home</li>
+                </ul>
+            </div>
+        </div>
+        <div class="right bg-grey rounded">
+            <div class="header">
+                <div class="buttons">
+                    <button class="signupbtn">Sign up</button>
+                    <button class="loginbtn">Log in</button>
+                </div>
+            </div>
+            <div class="spotifyPlaylists">
+                <h1>Create a Custom Playlist</h1>
+                <input type="text" class="playlist-name-input" placeholder="Playlist name..." />
+                <div class="song-checkbox-list">
+                    <!-- Songs will be dynamically added here -->
+                </div>
+                <button class="create-btn">Create Playlist</button>
+            </div>
+        </div>
+    </div>
+    <div class="custom-modal" id="customModal">
+        <div class="custom-modal-content">
+            playlist will be created like this once the api is linked perfectly in main modal
+            <br><br>
+            <button onclick="document.getElementById('customModal').classList.remove('show')" style="margin-top:18px;padding:8px 22px;border-radius:8px;background:var(--spotify-green);color:#fff;border:none;font-size:1.01rem;cursor:pointer;">OK</button>
+        </div>
+    </div>
+    <script>
+    // Home button navigation
+    document.addEventListener('DOMContentLoaded', function() {
+        var homeBtn = document.getElementById('homeBtn');
+        if (homeBtn) {
+            homeBtn.addEventListener('click', function() {
+                window.location.href = 'index.html';
+            });
+        }
+        // Fetch all songs from all playlists
+        fetch('songs/playlists.json').then(res => res.json()).then(async playlists => {
+            let allSongs = [];
+            for (const folder of playlists) {
+                let songs = [];
+                try {
+                    let response = await fetch(`songs/${folder}/tracks.json`);
+                    if (response.ok) {
+                        songs = await response.json();
+                    } else {
+                        let a = await fetch(`songs/${folder}/?_=${Date.now()}`, { cache: 'no-store', headers: { 'Accept': 'text/html' } });
+                        let response2 = await a.text();
+                        let div = document.createElement("div");
+                        div.innerHTML = response2;
+                        let as = div.getElementsByTagName("a");
+                        for (let index = 0; index < as.length; index++) {
+                            const element = as[index];
+                            if (element.href.endsWith(".mp3")) {
+                                songs.push(element.href.split(`${folder}/`)[1]);
+                            }
+                        }
+                    }
+                } catch {}
+                for (const song of songs) {
+                    allSongs.push({ folder, song });
+                }
+            }
+            // Render checkboxes
+            const songListDiv = document.querySelector('.song-checkbox-list');
+            songListDiv.innerHTML = allSongs.map(({folder, song}, idx) =>
+                `<div class="song-checkbox-item">
+                    <input type="checkbox" id="song_${idx}" data-folder="${folder}" data-song="${song}">
+                    <label for="song_${idx}">${decodeURIComponent(song).replace(/\.mp3$/, '')} <span style='color:#1db954;font-size:0.98em;'>(from ${folder.replace(/_/g, ' ')})</span></label>
+                </div>`
+            ).join('');
+        });
+        // Create Playlist button
+        document.querySelector('.create-btn').addEventListener('click', function() {
+            document.getElementById('customModal').classList.add('show');
+        });
+    });
+    </script>
+</body>
+</html> 

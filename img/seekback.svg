@@ -1,0 +1,8 @@
+<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <circle cx="14" cy="14" r="14" fill="none"/>
+    <path d="M17.5 9L13 14L17.5 19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M11 14H7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="4" y="24" font-size="7" fill="white" font-family="Arial" font-weight="bold">5</text>
+  </g>
+</svg> 
