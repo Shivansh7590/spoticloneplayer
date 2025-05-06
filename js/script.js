@@ -77,6 +77,10 @@ let playMusic = async (track, pause = false) => {
         
         document.querySelector(".songinfo").innerHTML = decodeURIComponent(track).replace(/\.mp3$/, '');
         document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
+        // --- Save session after song starts playing ---
+        if (typeof saveSession === 'function' && typeof currFolder !== 'undefined' && typeof currentSongFile !== 'undefined' && typeof currentSong !== 'undefined') {
+            saveSession(currFolder, currentSongFile, currentSong.currentTime);
+        }
     } catch (err) {
         console.error('Audio play error:', err);
     }
@@ -327,6 +331,10 @@ async function main() {
         let percent = (e.offsetX / e.target.getBoundingClientRect().width) * 100;
         document.querySelector(".circle").style.left = percent + "%";
         currentSong.currentTime = (currentSong.duration * percent) / 100;
+        // Save session after seeking
+        if (typeof saveSession === 'function' && typeof currFolder !== 'undefined' && typeof currentSongFile !== 'undefined' && typeof currentSong !== 'undefined') {
+            saveSession(currFolder, currentSongFile, currentSong.currentTime);
+        }
     });
 
     const sidebarBackdrop = document.querySelector('.sidebar-backdrop');
@@ -386,6 +394,10 @@ async function main() {
         } else {
             playMusic(songs[songs.length - 1]); // Loop to last song
         }
+        // Save session after skipping
+        if (typeof saveSession === 'function' && typeof currFolder !== 'undefined' && typeof currentSongFile !== 'undefined' && typeof currentSong !== 'undefined') {
+            saveSession(currFolder, currentSongFile, currentSong.currentTime);
+        }
     });
 
     next.addEventListener("click", () => {
@@ -394,6 +406,10 @@ async function main() {
             playMusic(songs[index + 1]);
         } else {
             playMusic(songs[0]); // Loop to first song
+        }
+        // Save session after skipping
+        if (typeof saveSession === 'function' && typeof currFolder !== 'undefined' && typeof currentSongFile !== 'undefined' && typeof currentSong !== 'undefined') {
+            saveSession(currFolder, currentSongFile, currentSong.currentTime);
         }
     });
 
@@ -431,11 +447,19 @@ async function main() {
     if (seekBackBtn) {
         seekBackBtn.addEventListener('click', () => {
             currentSong.currentTime = Math.max(0, currentSong.currentTime - 5);
+            // Save session after seeking
+            if (typeof saveSession === 'function' && typeof currFolder !== 'undefined' && typeof currentSongFile !== 'undefined' && typeof currentSong !== 'undefined') {
+                saveSession(currFolder, currentSongFile, currentSong.currentTime);
+            }
         });
     }
     if (seekForwardBtn) {
         seekForwardBtn.addEventListener('click', () => {
             currentSong.currentTime = Math.min(currentSong.duration, currentSong.currentTime + 5);
+            // Save session after seeking
+            if (typeof saveSession === 'function' && typeof currFolder !== 'undefined' && typeof currentSongFile !== 'undefined' && typeof currentSong !== 'undefined') {
+                saveSession(currFolder, currentSongFile, currentSong.currentTime);
+            }
         });
     }
 

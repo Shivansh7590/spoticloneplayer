@@ -34,9 +34,13 @@
         </div>
         <div class="right bg-grey rounded">
             <div class="header">
-                <div class="buttons">
-                    <button class="signupbtn">Sign up</button>
-                    <button class="loginbtn">Log in</button>
+                <div class="buttons" id="authButtons">
+                    <button class="signupbtn" onclick="openModal('signupModal')">Sign up</button>
+                    <button class="loginbtn" onclick="openModal('loginModal')">Log in</button>
+                </div>
+                <div class="greeting" id="greeting" style="display:none;">
+                    Hello, <span id="username"></span>!
+                    <button onclick="logoutUser()" style="margin-left:10px;">Logout</button>
                 </div>
             </div>
             <div class="spotifyPlaylists">
@@ -93,6 +97,28 @@
         <a href="https://www.instagram.com/shivaay.7590/" target="_blank" rel="noopener" class="contact-link">Instagram handle</a>
     </div>
     <script src="js/script.js"></script>
+    <script src="js/auth.js"></script>
+    <!-- Auth Modals -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+        <h2>Login</h2>
+        <input type="text" id="loginUsername" placeholder="Username" />
+        <input type="password" id="loginPassword" placeholder="Password" />
+        <button onclick="loginUser()">Login</button>
+        <div id="loginError" style="color:red;"></div>
+      </div>
+    </div>
+    <div id="signupModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeModal('signupModal')">&times;</span>
+        <h2>Sign Up</h2>
+        <input type="text" id="signupUsername" placeholder="Username" />
+        <input type="password" id="signupPassword" placeholder="Password" />
+        <button onclick="signupUser()">Sign Up</button>
+        <div id="signupError" style="color:red;"></div>
+      </div>
+    </div>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         var createBtn = document.querySelector('.createPlaylistBtn');
